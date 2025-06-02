@@ -6,13 +6,16 @@ WORKDIR /product-service
 # Copy only Cargo files first for better caching
 COPY Cargo.toml Cargo.lock ./
 
-# Prefetch dependencies without triggering full build
-RUN cargo fetch
+# Create a dummy main.rs to precompile dependencies
+RUN mkdir src && echo 'fn main() {}' > src/main.rs
 
-# Now copy the actual source code
+# Build dependencies to leverage Docker cache
+RUN cargo build --release && rm -rf src
+
+# Now copy actual source
 COPY . ./
 
-# Build the actual application
+# Build the real app
 RUN cargo build --release
 
 # === Runtime Stage ===
@@ -34,7 +37,7 @@ COPY --from=builder /product-service/target/release/product-service /app/
 # Set version env var
 ENV APP_VERSION=$APP_VERSION
 
-# Expose the default port
+# Expose the default port if you want to document it
 EXPOSE 3002
 
 # Start the app
