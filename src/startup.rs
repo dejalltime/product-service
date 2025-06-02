@@ -1,20 +1,24 @@
+use crate::model::{Product};
 
 use actix_cors::Cors;
 use actix_web::dev::Server;
 use actix_web::middleware::Logger;
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, App, HttpServer};
+use actix_web::{web};
 
-
-use std::sync::Mutex;
 use crate::configuration::Settings;
 use crate::routes::*;
-use crate::model::Product;
-use crate::data::fetch_products;
+use mongodb::{Client, Collection};
 
 
-pub fn run(mut settings: Settings) -> Result<Server, std::io::Error> {
+pub async fn run(mut settings: Settings) -> Result<Server, std::io::Error> {
     
-    let products = fetch_products(&settings);
+    // let products = fetch_products(&settings);
+
+    let mongo_client = Client::with_uri_str(&settings.mongo_uri).await.unwrap();
+    let product_collection = mongo_client
+        .database("bestbuy")
+        .collection::<Product>("products");
 
     let listener = settings.get_tcp_listener()?;
     let port = listener.local_addr().unwrap().port();
@@ -22,7 +26,8 @@ pub fn run(mut settings: Settings) -> Result<Server, std::io::Error> {
 
     
     let product_state = web::Data::new(AppState {
-        products: Mutex::new(products.to_vec()),
+        // products: Mutex::new(products.to_vec()),
+        product_collection,
         settings: settings,
     });
 
@@ -61,8 +66,9 @@ pub fn run(mut settings: Settings) -> Result<Server, std::io::Error> {
 }
 
 pub struct AppState {
-    pub products: Mutex<Vec<Product>>,
+    // pub products: Mutex<Vec<Product>>,
     pub settings: Settings,
+    pub product_collection: Collection<Product>, 
 }
 
 
