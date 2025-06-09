@@ -20,7 +20,7 @@ impl Settings {
 
         let wasm_bin_path_env = var("WASM_RULE_ENGINE_PATH").unwrap_or_else(|_| "./tests/rule_engine.wasm".to_string());
         let ai_service_url = std::env::var("AI_SERVICE_URL").unwrap_or_else(|_| "http://127.0.0.1:5001".to_string());
-        let mongo_uri = var("DB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".to_string());
+        let mongo_uri = var("PRODUCT_DB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".to_string());
 
         Settings {
             max_size: 262_144,
