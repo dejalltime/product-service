@@ -1,5 +1,5 @@
 # === Builder Stage ===
-FROM rust:1.80.0 AS builder
+FROM rust:1.82.0 AS builder
 
 WORKDIR /product-service
 
@@ -13,7 +13,7 @@ RUN cargo fetch
 COPY . ./
 
 # Build the actual application
-RUN cargo build --release
+RUN cargo build
 
 # === Runtime Stage ===
 FROM debian:bookworm-slim AS runner
