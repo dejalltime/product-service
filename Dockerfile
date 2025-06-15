@@ -1,5 +1,5 @@
 # === Builder Stage ===
-FROM rust:1.80.0 AS builder
+FROM rust:latest AS builder
 
 WORKDIR /product-service
 

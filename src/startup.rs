@@ -17,8 +17,8 @@ pub async fn run(mut settings: Settings) -> Result<Server, std::io::Error> {
 
     let mongo_client = Client::with_uri_str(&settings.mongo_uri).await.unwrap();
     let product_collection = mongo_client
-        .database(var("PRODUCT_DB_NAME").unwrap_or("best_buy".to_string()))
-        .collection::<Product>(var("PRODUCT_COLLECTION_NAME").unwrap_or("products".to_string()));
+        .database("bestbuy")
+        .collection::<Product>("products");
 
     let listener = settings.get_tcp_listener()?;
     let port = listener.local_addr().unwrap().port();
